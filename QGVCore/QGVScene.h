@@ -18,7 +18,7 @@ License along with this library.
 #ifndef QGVSCENE_H
 #define QGVSCENE_H
 
-#include <qgv.h>
+#include "qgv.h"
 #include <QGraphicsScene>
 
 class QGVNode;
@@ -72,7 +72,9 @@ public slots:
 protected:
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent * contextMenuEvent);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent);
+#if 0
     virtual void drawBackground(QPainter * painter, const QRectF & rect);
+#endif
 private:
     friend class QGVNode;
     friend class QGVEdge;
@@ -82,6 +84,7 @@ private:
 		QGVGraphPrivate *_graph;
     //QFont _font;
 
+    QString _name;
     QList<QGVNode*> _nodes;
     QList<QGVEdge*> _edges;
     QList<QGVSubGraph*> _subGraphs;

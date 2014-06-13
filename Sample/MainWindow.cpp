@@ -60,9 +60,9 @@ void MainWindow::drawGraph()
     //_scene->setGraphAttribute("concentrate", "true"); //Error !
     _scene->setGraphAttribute("nodesep", "0.4");
 
-    _scene->setNodeAttribute("shape", "box");
+    _scene->setNodeAttribute("shape", "circle");
     _scene->setNodeAttribute("style", "filled");
-    _scene->setNodeAttribute("fillcolor", "white");
+    _scene->setNodeAttribute("fillcolor", "yellow");
     _scene->setNodeAttribute("height", "1.2");
     _scene->setEdgeAttribute("minlen", "3");
     //_scene->setEdgeAttribute("dir", "both");

@@ -18,7 +18,7 @@ License along with this library.
 #ifndef QGVNODE_H
 #define QGVNODE_H
 
-#include <qgv.h>
+#include "qgv.h"
 #include <QGraphicsItem>
 #include <QPen>
 
@@ -62,6 +62,7 @@ private:
 //		QPolygonF makeShapeHelper(Agnode_t* node) const;
 
     QPainterPath _path;
+    QPainterPath _shadowPath;
     QPen _pen;
     QBrush _brush;
     QImage _icon;

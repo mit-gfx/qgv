@@ -30,7 +30,9 @@ License along with this library.
 #include <QGVEdgePrivate.h>
 #include <QGVNodePrivate.h>
 
-QGVScene::QGVScene(const QString &name, QObject *parent) : QGraphicsScene(parent)
+QGVScene::QGVScene(const QString &name, QObject *parent) : 
+    QGraphicsScene(parent),
+    _name(name)
 {
 		_context = new QGVGvcPrivate(gvContext());
 		_graph = new QGVGraphPrivate(agopen(name.toLocal8Bit().data(), Agdirected, NULL));
@@ -188,11 +190,20 @@ void QGVScene::applyLayout()
 
 void QGVScene::clear()
 {
-		gvFreeLayout(_context->context(), _graph->graph());
     _nodes.clear();
     _edges.clear();
     _subGraphs.clear();
     QGraphicsScene::clear();
+    gvFreeLayout(_context->context(), _graph->graph());
+
+#if 0
+    agclose(_graph->graph());
+    gvFreeContext(_context->context());
+    delete _graph;
+    delete _context;
+    _context = new QGVGvcPrivate(gvContext());
+    _graph = new QGVGraphPrivate(agopen(_name.toLocal8Bit().data(), Agdirected, NULL));
+#endif
 }
 
 #include <QGraphicsSceneContextMenuEvent>
@@ -229,6 +240,7 @@ void QGVScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsScene::mouseDoubleClickEvent(mouseEvent);
 }
 
+#if 0
 #include <QVarLengthArray>
 #include <QPainter>
 void QGVScene::drawBackground(QPainter * painter, const QRectF & rect)
@@ -252,3 +264,4 @@ void QGVScene::drawBackground(QPainter * painter, const QRectF & rect)
     painter->setPen(Qt::black);
     //painter->drawRect(sceneRect());
 }
+#endif

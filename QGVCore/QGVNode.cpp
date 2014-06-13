@@ -23,6 +23,8 @@ License along with this library.
 #include <QDebug>
 #include <QPainter>
 
+#include <stdlib.h>
+
 QGVNode::QGVNode(QGVNodePrivate *node, QGVScene *scene): _node(node), _scene(scene)
 {
     setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -46,41 +48,60 @@ void QGVNode::setLabel(const QString &label)
 
 QRectF QGVNode::boundingRect() const
 {
-    return _path.boundingRect();
+    return _path.boundingRect().united(_shadowPath.boundingRect());
 }
 
 void QGVNode::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
     painter->save();
 
-    painter->setPen(_pen);
+    painter->setRenderHint(QPainter::Antialiasing, true);
 
-    if(isSelected())
-    {
+    // Shadow
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(QColor(7, 7, 7));
+    painter->drawPath(_shadowPath);
+
+    // Fill
+    if(isSelected()) {
         QBrush tbrush(_brush);
-        tbrush.setColor(tbrush.color().darker(120));
+        tbrush.setColor(tbrush.color().darker(160));
         painter->setBrush(tbrush);
-    }
-    else
+        _pen.setColor(QGVCore::toColor(getAttribute("selectedcolor")));
+    } else {
         painter->setBrush(_brush);
-
+        _pen.setColor(QGVCore::toColor(getAttribute("color")));
+    }
+    painter->setPen(_pen);
     painter->drawPath(_path);
 
-    painter->setPen(QGVCore::toColor(getAttribute("labelfontcolor")));
-
-    const QRectF rect = boundingRect().adjusted(2,2,-2,-2); //Margin
-    if(_icon.isNull())
-    {
-        painter->drawText(rect, Qt::AlignCenter , QGVNode::label());
+    // Text/Icon
+    if(isSelected()) {
+        painter->setPen(QGVCore::toColor(getAttribute("selectedlabelfontcolor")));
+    } else {
+        painter->setPen(QGVCore::toColor(getAttribute("labelfontcolor")));
     }
-    else
-    {
+    const QString &fontAttr = getAttribute("labelfont");
+    QFont font = painter->font();
+    if (fontAttr != "") {
+        font = QFont(font);
+    }
+    const QString &fontWeightAttr = getAttribute("labelfontweight");
+    if (fontWeightAttr == "bold") {
+        font.setBold(true);
+    }
+    painter->setFont(font);
+    const QRectF rect = boundingRect().adjusted(2,2,-2,-2); //Margin
+    if(_icon.isNull()) {
+        painter->drawText(rect, Qt::AlignCenter , QGVNode::label());
+    } else {
         painter->drawText(rect.adjusted(0,0,0, -rect.height()*2/3), Qt::AlignCenter , QGVNode::label());
 
         const QRectF img_rect = rect.adjusted(0, rect.height()/3,0, 0);
         QImage img = _icon.scaled(img_rect.size().toSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         painter->drawImage(img_rect.topLeft() + QPointF((img_rect.width() - img.rect().width())/2, 0), img);
     }
+
     painter->restore();
 }
 
@@ -116,12 +137,14 @@ void QGVNode::updateLayout()
     setZValue(1);
 
     //Node path
-		_path = QGVCore::toPath(ND_shape(_node->node())->name, (polygon_t*)ND_shape_info(_node->node()), width, height);
+    _path = QGVCore::toPath(ND_shape(_node->node())->name, (polygon_t*)ND_shape_info(_node->node()), width, height);
+    _shadowPath = _path;
+    int shadowOffset = atoi(getAttribute("shadowoffset").toStdString().c_str());
+    _shadowPath.translate(shadowOffset, shadowOffset);
     _pen.setWidth(1);
 
     _brush.setStyle(QGVCore::toBrushStyle(getAttribute("style")));
     _brush.setColor(QGVCore::toColor(getAttribute("fillcolor")));
-    _pen.setColor(QGVCore::toColor(getAttribute("color")));
 
     setToolTip(getAttribute("tooltip"));
 }

@@ -23,6 +23,8 @@ License along with this library.
 #include <QDebug>
 #include <QPainter>
 
+#include <iostream>
+
 QGVEdge::QGVEdge(QGVEdgePrivate *edge, QGVScene *scene) :  _edge(edge), _scene(scene)
 {
     setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -66,7 +68,7 @@ void QGVEdge::paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
     if(isSelected())
     {
         QPen tpen(_pen);
-        tpen.setColor(_pen.color().darker(120));
+        tpen.setColor(_pen.color().darker(140));
         tpen.setStyle(Qt::DotLine);
         painter->setPen(tpen);
     }

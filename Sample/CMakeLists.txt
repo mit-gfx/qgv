@@ -16,7 +16,7 @@ SET(qgv_CPP
 )
 
 # include with QT_USE selected library parts
-INCLUDE(${QT_USE_FILE})
+# INCLUDE(${QT_USE_FILE})
 
 INCLUDE_DIRECTORIES(
   ${libqgv_SOURCE_DIR}
@@ -26,13 +26,13 @@ INCLUDE_DIRECTORIES(
 )
 
 # make *.h out of *.ui
-QT4_WRAP_UI(qgv_UI_H ${qgv_UI})
+QT5_WRAP_UI(qgv_UI_H ${qgv_UI})
 
 # moc classes
-QT4_AUTOMOC(${qgv_CPP})
+# QT5_AUTOMOC(${qgv_CPP})
 
 # add translations
-QT4_ADD_TRANSLATION(qgv_TRANS ${qgv_TS})
+QT5_ADD_TRANSLATION(qgv_TRANS ${qgv_TS})
 
 SET(neededStuff
   ${qgv_CPP}
