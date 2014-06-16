@@ -19,6 +19,7 @@ License along with this library.
 // The following include allows the automoc to detect, that it must moc this class
 #include "moc_QGVScene.cpp"
 #include <QDebug>
+#include <QMimeData>
 
 #include <QGVNode.h>
 #include <QGVEdge.h>
@@ -195,15 +196,6 @@ void QGVScene::clear()
     _subGraphs.clear();
     QGraphicsScene::clear();
     gvFreeLayout(_context->context(), _graph->graph());
-
-#if 0
-    agclose(_graph->graph());
-    gvFreeContext(_context->context());
-    delete _graph;
-    delete _context;
-    _context = new QGVGvcPrivate(gvContext());
-    _graph = new QGVGraphPrivate(agopen(_name.toLocal8Bit().data(), Agdirected, NULL));
-#endif
 }
 
 #include <QGraphicsSceneContextMenuEvent>
@@ -239,29 +231,3 @@ void QGVScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
     QGraphicsScene::mouseDoubleClickEvent(mouseEvent);
 }
-
-#if 0
-#include <QVarLengthArray>
-#include <QPainter>
-void QGVScene::drawBackground(QPainter * painter, const QRectF & rect)
-{
-    const int gridSize = 25;
-
-    const qreal left = int(rect.left()) - (int(rect.left()) % gridSize);
-    const qreal top = int(rect.top()) - (int(rect.top()) % gridSize);
-
-    QVarLengthArray<QLineF, 100> lines;
-
-    for (qreal x = left; x < rect.right(); x += gridSize)
-        lines.append(QLineF(x, rect.top(), x, rect.bottom()));
-    for (qreal y = top; y < rect.bottom(); y += gridSize)
-        lines.append(QLineF(rect.left(), y, rect.right(), y));
-
-    painter->setRenderHint(QPainter::Antialiasing, false);
-
-    painter->setPen(QColor(Qt::lightGray).lighter(110));
-    painter->drawLines(lines.data(), lines.size());
-    painter->setPen(Qt::black);
-    //painter->drawRect(sceneRect());
-}
-#endif

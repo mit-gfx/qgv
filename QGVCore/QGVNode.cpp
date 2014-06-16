@@ -22,12 +22,21 @@ License along with this library.
 #include <QGVNodePrivate.h>
 #include <QDebug>
 #include <QPainter>
+#include <QMimeData>
+#include <QDrag>
+#include <QGraphicsSceneMouseEvent>
+#include <QWidget>
 
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 
-QGVNode::QGVNode(QGVNodePrivate *node, QGVScene *scene): _node(node), _scene(scene)
+QGVNode::QGVNode(QGVNodePrivate *node, QGVScene *scene) : 
+    _node(node), 
+    _scene(scene),
+    _mouseDown(false)
 {
     setFlag(QGraphicsItem::ItemIsSelectable, true);
+    setAcceptDrops(true);
 }
 
 QGVNode::~QGVNode()
@@ -147,4 +156,49 @@ void QGVNode::updateLayout()
     _brush.setColor(QGVCore::toColor(getAttribute("fillcolor")));
 
     setToolTip(getAttribute("tooltip"));
+}
+
+void
+QGVNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem::mousePressEvent(event);
+
+    _mouseDown = true;
+    _mouseBeginPos = event->screenPos();
+}
+
+void
+QGVNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem::mouseReleaseEvent(event);
+
+    _mouseDown = false;
+}
+
+void 
+QGVNode::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem::mouseMoveEvent(event);
+
+    // Only initiate a drag-and-drop if we detect some mouse motion since
+    // mouse down.
+    if (!_mouseDown) {
+        return;
+    }
+    const int threshold = 10;
+    QPoint screenPos = event->screenPos();
+    int dx = std::abs(_mouseBeginPos.x() - screenPos.x()); 
+    int dy = std::abs(_mouseBeginPos.y() - screenPos.y()); 
+    if (dx < threshold && dy < threshold) {
+        return;
+    }
+
+    QMimeData *mimeData = new QMimeData();
+    QVariant userData = data(0);
+    mimeData->setData("QGVNodeUserData", userData.toByteArray());
+
+    // Start the drag and drop
+    QDrag *drag = new QDrag(event->widget());
+    drag->setMimeData(mimeData);
+    drag->start();
 }

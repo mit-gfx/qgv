@@ -51,11 +51,16 @@ public:
         return Type;
     }
 
+protected:
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+
 private:
     friend class QGVScene;
     friend class QGVSubGraph;
     void updateLayout();
-		QGVNode(QGVNodePrivate* node, QGVScene *scene);
+    QGVNode(QGVNodePrivate* node, QGVScene *scene);
 
 		// Not implemented in QGVNode.cpp
 //		QPainterPath makeShape(Agnode_t* node) const;
@@ -68,7 +73,9 @@ private:
     QImage _icon;
 
     QGVScene *_scene;
-		QGVNodePrivate* _node;
+    QGVNodePrivate* _node;
+    bool _mouseDown;
+    QPoint _mouseBeginPos;
 };
 
 

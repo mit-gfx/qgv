@@ -72,9 +72,7 @@ public slots:
 protected:
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent * contextMenuEvent);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent);
-#if 0
-    virtual void drawBackground(QPainter * painter, const QRectF & rect);
-#endif
+
 private:
     friend class QGVNode;
     friend class QGVEdge;
